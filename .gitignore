@@ -1,0 +1,38 @@
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# dotenv
+.env
+.env.*     # .env.local なども除外
+
+# OS
+.DS_Store
+Thumbs.db
+
+# build output
+dist/
+build/
+out/
+
+# Next.js
+.next/
+.vercel/
+out/
+
+# Prisma
+prisma/.env
+prisma/migrations/
+
+# coverage (テスト関連)
+coverage/
+
+# その他自動生成・一時ファイル
+*.log
+*.tsbuildinfo
+
+# VSCode settings（個人設定用）
+.vscode/
