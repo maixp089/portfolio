@@ -19,5 +19,5 @@ portfolio/
 | 認証             | Firebase Authentication              |
 | Lint/フォーマット | ESLint, Prettier                     |
 
-[API設計書](/docs/API.md)
-[ER図](/docs/ER.md)
+[API設計書はコチラ](/docs/API.md)　　
+[ER図はコチラ](/docs/ER.md)
