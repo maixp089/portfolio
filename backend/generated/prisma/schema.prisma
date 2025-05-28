@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+// 認証情報
+model User {
+  id          Int         @id @default(autoincrement())
+  name        String
+  email       String      @unique
+  firebaseUid String      @unique
+  portfolios  Portfolio[]
+  skills      Skill[]
+  contacts    Contact[]
+  bio         String?
+}
+
+// ポートフォリオ・実績
+model Portfolio {
+  id          Int     @id @default(autoincrement())
+  title       String
+  description String?
+  images      Image[]
+  user        User    @relation(fields: [userId], references: [id])
+  userId      Int
+}
+
+// スキル
+model Skill {
+  id      Int     @id @default(autoincrement())
+  name    String
+  user    User    @relation(fields: [userId], references: [id])
+  userId  Int
+  logoUrl String?
+}
+
+// 問合せ
+model Contact {
+  id      Int    @id @default(autoincrement())
+  message String
+  email   String
+  user    User   @relation(fields: [userId], references: [id])
+  userId  Int
+}
+
+// 画像
+model Image {
+  id          Int       @id @default(autoincrement())
+  url         String
+  portfolio   Portfolio @relation(fields: [portfolioId], references: [id])
+  portfolioId Int
+}
