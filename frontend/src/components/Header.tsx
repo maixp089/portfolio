@@ -1,6 +1,21 @@
-import { Box, Flex, Text, Link } from "@chakra-ui/react";
+import { Box, Flex, Text, Link, Button } from "@chakra-ui/react";
+import { getAuth, signOut } from "firebase/auth";
+import { app } from "../utils/firebase"; // ← initializeApp済みfirebase
 
-export default function Header() {
+// isAdmin をpropsで受け取る
+export default function Header({ isAdmin = false }: { isAdmin?: boolean }) {
+  // ログアウト処理（仮。Firebase認証ならここにlogout関数いれる）
+   const handleLogout = async () => {
+    const auth = getAuth(app);
+    try {
+      await signOut(auth);
+      alert("ログアウトしました！");
+      window.location.href = "/"; // ← 任意でトップページなどにリダイレクト
+    } catch (error) {
+      alert("ログアウトに失敗しました");
+    }
+  };
+
   return (
     <Box as="header" w="100%" pos="relative" py={4}>
       {/* 横線 */}
@@ -33,15 +48,31 @@ export default function Header() {
         </Text>
         {/* 右：メニュー横並び */}
         <Flex align="center" gap={5} mt={1}>
-          <Text as="span" fontSize="md">Home</Text>
-          <Text as="span" fontSize="md">Project</Text>
-          <Text as="span" fontSize="md">Skill</Text>
+          <Link href="#">Home</Link>
+          <Link href="#project">Project</Link>
+          <Link href="#skill">Skill</Link>
           <Link href="/contact" fontSize="md" _hover={{ color: "blue.600", textDecoration: "underline" }}>
             Contact
           </Link>
-          <Link href="/login" fontSize="md" _hover={{ color: "blue.600", textDecoration: "underline" }}>
-            Login
-          </Link>
+          {isAdmin ? (
+            <Button
+              size="sm"
+              colorScheme="gray"
+              variant="outline"
+              borderRadius="full"
+              onClick={handleLogout}
+            >
+              Logout
+            </Button>
+          ) : (
+            <Link
+              href="/login"
+              fontSize="md"
+              _hover={{ color: "blue.600", textDecoration: "underline" }}
+            >
+              Login
+            </Link>
+          )}
         </Flex>
       </Flex>
     </Box>
