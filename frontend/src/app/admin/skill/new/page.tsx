@@ -1,9 +1,10 @@
 'use client'
 import { useState } from 'react'
-import { Box, Button, FormControl, FormLabel, Input, Center, Text, Heading } from '@chakra-ui/react'
+import { Box, Button, FormControl, FormLabel, Input, Center, Text, Heading, Textarea } from '@chakra-ui/react'
 
 export default function AddSkillPage() {
   const [name, setName] = useState('')
+  const [description, setDescription] = useState('') // ← コメント欄
   const [logo, setLogo] = useState<File | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -27,7 +28,8 @@ export default function AddSkillPage() {
     const formData = new FormData()
     formData.append('name', name)
     formData.append('userId', String(userId))
-    if (logo) formData.append('logo', logo) // キー名に注意！
+    if (description.trim()) formData.append('description', description) // ← コメントも送信！
+    if (logo) formData.append('logo', logo)
 
     try {
       const res = await fetch('http://localhost:4000/api/skills', {
@@ -39,7 +41,8 @@ export default function AddSkillPage() {
         setError(json.message || '登録に失敗しました')
         return
       }
-      // 登録成功後、リダイレクトや通知など
+      // 成功後に管理画面トップへリダイレクト
+      window.location.href = '/admin'
     } catch (err: any) {
       setError(err.message || '登録に失敗しました')
     } finally {
@@ -61,6 +64,15 @@ export default function AddSkillPage() {
               onChange={e => setName(e.target.value)}
               placeholder="例: React"
               required
+            />
+          </FormControl>
+          <FormControl mb={4}>
+            <FormLabel>コメント（任意）</FormLabel>
+            <Textarea
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              placeholder="例: 得意な内容や使える技術・アピールポイントなど"
+              rows={3}
             />
           </FormControl>
           <FormControl mb={6}>

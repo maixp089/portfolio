@@ -51,7 +51,7 @@ export default function Header({ isAdmin = false }: { isAdmin?: boolean }) {
           <Link href="#">Home</Link>
           <Link href="#project">Project</Link>
           <Link href="#skill">Skill</Link>
-          <Link href="/contact" fontSize="md" _hover={{ color: "blue.600", textDecoration: "underline" }}>
+          <Link href="/contactform" fontSize="md" _hover={{ color: "blue.600", textDecoration: "underline" }}>
             Contact
           </Link>
           {isAdmin ? (

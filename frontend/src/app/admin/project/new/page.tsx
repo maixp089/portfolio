@@ -57,7 +57,7 @@ export default function AddProjectPage() {
         setError(json.message || '登録に失敗しました')
         return
       }
-      window.location.href = '/admin/project'
+      window.location.href = '/admin'
     } catch (err: any) {
       setError(err.message || '登録に失敗しました')
     } finally {
