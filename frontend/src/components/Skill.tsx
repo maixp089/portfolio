@@ -1,3 +1,5 @@
+"use client";
+import { useRouter } from 'next/navigation';
 import {
   Box,
   Heading,
@@ -37,8 +39,9 @@ export default function SkillSection({
 }: {
   isAdmin?: boolean;
 }) {
+  const router = useRouter();
   const handleEdit = () => {
-    alert('スキル編集画面へ！（ここをモーダルやページ遷移に）');
+    router.push('/admin/skill/new')
   };
 
   return (
@@ -58,7 +61,7 @@ export default function SkillSection({
         <Box flex="1" h="1.5px" bg="gray.300" />
       </Flex>
       {/* 編集ボタン（コンポーネント） */}
-      {isAdmin && <EditButton onClick={handleEdit} label="編集" />}
+      {isAdmin && <EditButton onClick={handleEdit} label="追加" />}
 
       {/* 3〜4つ横並び */}
       <SimpleGrid

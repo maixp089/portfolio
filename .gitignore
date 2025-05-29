@@ -23,9 +23,14 @@ out/
 .vercel/
 out/
 
+# 画像
+/frontend/public/mountain.jpg
+/backend/uploads
+
 # Prisma
 prisma/.env
 prisma/migrations/
+generated/
 
 # coverage (テスト関連)
 coverage/

@@ -1,10 +1,13 @@
+"use client";
+import { useRouter } from "next/navigation";
 import { Box, Flex, Heading, Text, Button } from "@chakra-ui/react";
 import EditButton from './EditButton';
 
 export default function ContactSection({ isAdmin = false }: { isAdmin?: boolean }) {
   // 管理者の「確認」ボタン用
+  const router = useRouter();
   const handleConfirm = () => {
-    alert("お問い合わせ内容の管理ページやモーダルに遷移（ここで実装）");
+    router.push("/admin/contact");
   };
 
   return (
@@ -32,7 +35,7 @@ export default function ContactSection({ isAdmin = false }: { isAdmin?: boolean 
         ) : (
           <Button
             as="a"
-            href="/contact"
+            href="/contactform"
             size="lg"
             colorScheme="gray"
             variant="solid"
