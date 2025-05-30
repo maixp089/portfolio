@@ -1,6 +1,6 @@
-"use client";
+'use client';
 import { useRouter } from 'next/navigation';
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 import {
   Box,
   Heading,
@@ -18,7 +18,7 @@ type Skill = {
   name: string;
   description?: string;
   logoUrl?: string;
-}
+};
 
 export default function SkillSection({
   isAdmin = false,
@@ -35,10 +35,14 @@ export default function SkillSection({
       try {
         const res = await fetch('http://localhost:4000/api/skills');
         const data = await res.json();
-        if (!res.ok) throw new Error(data.message || "取得に失敗しました");
+        if (!res.ok) throw new Error(data.message || '取得に失敗しました');
         setSkills(data);
-      } catch (err: any) {
-        setError(err.message || "取得に失敗しました");
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message); 
+        } else {
+          setError('取得に失敗しました');
+        }
       } finally {
         setLoading(false);
       }
@@ -89,7 +93,12 @@ export default function SkillSection({
         </Flex>
       )}
       {/* 4つ横並び */}
-      <SimpleGrid columns={[1, 2, 3, 4]} spacing={10} mb={10} justifyItems="center">
+      <SimpleGrid
+        columns={[1, 2, 3, 4]}
+        spacing={10}
+        mb={10}
+        justifyItems="center"
+      >
         {skills.map((skill) => (
           <Box
             key={skill.id}

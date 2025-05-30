@@ -1,13 +1,4 @@
-### ポートフォリオサイト
-
-## ディレクトリ構成
-```bash
-portfolio/
-├── backend/ # Express + Prisma (APIサーバ)
-├── frontend/ # Next.js (Webフロント)
-├── .gitignore
-└── README.md
-```
+# ポートフォリオサイト
 
 ## 使用技術一覧
 
@@ -19,5 +10,17 @@ portfolio/
 | 認証             | Firebase Authentication              |
 | Lint/フォーマット | ESLint, Prettier                     |
 
+## ディレクトリ構成
+```bash
+PORTFOLIO/
+├── .vscode/         # エディタ設定（スペルチェッカー）
+├── backend/         # バックエンド（Express/Prisma）
+├── docs/            # API設計書等
+├── frontend/        # フロントエンド（Next.js）
+├── .gitignore       # Git管理対象外ファイル設定（全体）
+└── README.md        # このファイル
+```
+
 [API設計書はコチラ](/docs/API.md)　　
+<br>
 [ER図はコチラ](/docs/ER.md)

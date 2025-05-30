@@ -1,3 +1,4 @@
+```mermaid
 erDiagram
   User {
     int id PK
@@ -34,3 +35,4 @@ erDiagram
   User ||--o{ Skill : ""
   User ||--o{ Contact : ""
   Portfolio ||--o{ Image : ""
+```

@@ -1,5 +1,5 @@
-"use client";
-import { useRouter } from "next/navigation";
+'use client';
+import { useRouter } from 'next/navigation';
 import {
   Box,
   Button,
@@ -11,13 +11,13 @@ import {
   Text,
   useToast,
   Spinner,
-} from "@chakra-ui/react";
-import { useState } from "react";
+} from '@chakra-ui/react';
+import { useState } from 'react';
 
 export default function ContactFormPage() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
+  const [name, setName] = useState('');
+  const [email, setEmail] = useState('');
+  const [message, setMessage] = useState('');
   const [loading, setLoading] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const toast = useToast();
@@ -26,12 +26,12 @@ export default function ContactFormPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    // バリデーション（必要なら追加OK）
+    // バリデーション
     if (!name || !email || !message) {
       toast({
-        title: "エラー",
-        description: "すべて入力してください！",
-        status: "error",
+        title: 'エラー',
+        description: 'すべて入力してください！',
+        status: 'error',
         duration: 2500,
         isClosable: true,
       });
@@ -40,34 +40,37 @@ export default function ContactFormPage() {
 
     setLoading(true);
     try {
-      const res = await fetch("http://localhost:4000/api/contacts", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
+      const res = await fetch('http://localhost:4000/api/contacts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ name, email, message }),
       });
 
       if (!res.ok) {
-        throw new Error("送信に失敗しました");
+        throw new Error('送信に失敗しました');
       }
 
       setSubmitted(true);
       toast({
-        title: "送信完了",
-        description: "お問い合わせを送信しました。ありがとうございました！",
-        status: "success",
+        title: '送信完了',
+        description: 'お問い合わせを送信しました。ありがとうございました！',
+        status: 'success',
         duration: 3000,
         isClosable: true,
       });
-    // 2秒くらい待ってからトップへ
+      // 2秒くらい待ってからトップへ
       setTimeout(() => {
-        router.push("/");
+        router.push('/');
       }, 2000);
-   
-    } catch (error: any) {
+    } catch (error: unknown) {
+      let message = '何らかのエラーが発生しました';
+      if (error instanceof Error) {
+        message = error.message;
+      }
       toast({
-        title: "送信エラー",
-        description: error.message || "何らかのエラーが発生しました",
-        status: "error",
+        title: '送信エラー',
+        description: message,
+        status: 'error',
         duration: 3000,
         isClosable: true,
       });

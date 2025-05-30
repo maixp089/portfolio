@@ -4,13 +4,12 @@ import { app } from "../utils/firebase"; // ← initializeApp済みfirebase
 
 // isAdmin をpropsで受け取る
 export default function Header({ isAdmin = false }: { isAdmin?: boolean }) {
-  // ログアウト処理（仮。Firebase認証ならここにlogout関数いれる）
    const handleLogout = async () => {
     const auth = getAuth(app);
     try {
       await signOut(auth);
       alert("ログアウトしました！");
-      window.location.href = "/"; // ← 任意でトップページなどにリダイレクト
+      window.location.href = "/"; // ← トップページにリダイレクト
     } catch (error) {
       alert("ログアウトに失敗しました");
     }

@@ -37,8 +37,12 @@ export default function ProjectSection({
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || '取得に失敗しました');
         setProjects(data);
-      } catch (err: any) {
-        setError(err.message || '取得に失敗しました');
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message); 
+        } else {
+          setError('取得に失敗しました');
+        }
       } finally {
         setLoading(false);
       }
@@ -151,11 +155,13 @@ export default function ProjectSection({
                   onClick={() => handleEdit(project.id)}
                   label="変更"
                   colorScheme="blue"
+                  size="sm"
                 />
                 <EditButton
                   onClick={() => handleDelete(project.id)}
                   label="削除"
                   colorScheme="red"
+                  size="sm"
                 />
               </Flex>
             )}
