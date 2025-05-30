@@ -1,3 +1,6 @@
+'use client';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import {
   Box,
   Heading,
@@ -5,35 +8,80 @@ import {
   Text,
   Image,
   Flex,
+  Center,
+  Spinner,
 } from '@chakra-ui/react';
 import EditButton from './EditButton';
 
-// 仮データ（本番はAPIから取得！）
-const projects = [
-  {
-    name: '家計簿アプリ',
-    description: '収支管理を簡単にできるシンプルなwebアプリ',
-    imageUrl: '/images/kakebo.png',
-  },
-  {
-    name: 'ポートフォリオサイト',
-    description: '自身のスキルや実績をまとめたポートフォリオ',
-    imageUrl: '/images/portfolio.png',
-  },
-];
+type Project = {
+  id: number;
+  title: string;
+  description?: string;
+  images?: { url: string }[];
+};
 
 export default function ProjectSection({
   isAdmin = false,
 }: {
   isAdmin?: boolean;
 }) {
-  const handleEdit = () => {
-    alert('プロジェクト編集画面へ！（ここをモーダルやページ遷移に）');
+  const router = useRouter();
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        const res = await fetch('http://localhost:4000/api/portfolios');
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || '取得に失敗しました');
+        setProjects(data);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message); 
+        } else {
+          setError('取得に失敗しました');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProjects();
+  }, []);
+
+  // 編集遷移
+  const handleEdit = (id: number) => {
+    router.push(`/admin/project/${id}/edit`);
   };
+
+  // 削除処理（サンプル）
+  const handleDelete = (id: number) => {
+    if (window.confirm('本当に削除しますか？')) {
+      alert(`${id} を削除しました！（本番はAPIで削除）`);
+      // 実際はAPIでDELETEリクエストを送信し、リロードや再取得も必要
+    }
+  };
+
+  if (loading) {
+    return (
+      <Center minH="70vh">
+        <Spinner size="xl" color="blue.500" />
+      </Center>
+    );
+  }
+
+  if (error) {
+    return (
+      <Center minH="70vh">
+        <Text color="red.500">{error}</Text>
+      </Center>
+    );
+  }
 
   return (
     <Box as="section" id="project" py={16} px={4} maxW="1200px" mx="auto">
-      {/* 見出しを中央線付きで */}
+      {/* 見出し */}
       <Flex align="center" justify="center" mb={2}>
         <Box flex="1" h="1.5px" bg="gray.300" />
         <Heading
@@ -47,13 +95,23 @@ export default function ProjectSection({
         </Heading>
         <Box flex="1" h="1.5px" bg="gray.300" />
       </Flex>
-      {/* 編集ボタン（コンポーネント） */}
-      {isAdmin && <EditButton onClick={handleEdit} label="編集" />}
 
+      {/* 追加ボタン */}
+      {isAdmin && (
+        <Flex justify="center" mb={4}>
+          <EditButton
+            onClick={() => router.push('/admin/project/new')}
+            label="追加"
+            colorScheme="teal"
+          />
+        </Flex>
+      )}
+
+      {/* 一覧 */}
       <SimpleGrid columns={[1, 2]} spacing={10} mb={10} justifyItems="center">
         {projects.map((project) => (
           <Box
-            key={project.name}
+            key={project.id}
             w="500px"
             h="300px"
             border="2px solid #aaa"
@@ -70,23 +128,43 @@ export default function ProjectSection({
             transition="box-shadow 0.2s"
             _hover={{ boxShadow: 'xl', borderColor: '#888' }}
           >
-            <Image
-              src={project.imageUrl}
-              alt={project.name}
-              w="100%"
-              h="150px"
-              objectFit="cover"
-              borderRadius="lg"
-              mb={4}
-              bg="gray.100"
-              boxShadow="sm"
-            />
+            {/* 画像がある場合だけ表示 */}
+            {project.images && project.images[0]?.url && (
+              <Image
+                src={`http://localhost:4000/${project.images[0].url.replace(/^\/?/, '')}`}
+                alt={project.title}
+                w="400px"
+                h="200px"
+                objectFit="contain"
+                borderRadius="lg"
+                mb={4}
+                bg="white"
+                boxShadow="sm"
+              />
+            )}
             <Text fontSize="xl" fontWeight="bold">
-              {project.name}
+              {project.title}
             </Text>
             <Text color="gray.500" mt={1}>
               {project.description}
             </Text>
+            {/* 変更・削除ボタン（管理者のみ表示） */}
+            {isAdmin && (
+              <Flex gap={2} mt={2} justify="center">
+                <EditButton
+                  onClick={() => handleEdit(project.id)}
+                  label="変更"
+                  colorScheme="blue"
+                  size="sm"
+                />
+                <EditButton
+                  onClick={() => handleDelete(project.id)}
+                  label="削除"
+                  colorScheme="red"
+                  size="sm"
+                />
+              </Flex>
+            )}
           </Box>
         ))}
       </SimpleGrid>

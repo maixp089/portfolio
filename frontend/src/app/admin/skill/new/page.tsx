@@ -1,0 +1,101 @@
+'use client'
+import { useState } from 'react'
+import { Box, Button, FormControl, FormLabel, Input, Center, Text, Heading, Textarea } from '@chakra-ui/react'
+
+export default function AddSkillPage() {
+  const [name, setName] = useState('')
+  const [description, setDescription] = useState('') // ← コメント欄
+  const [logo, setLogo] = useState<File | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  // 仮ユーザーID
+  const userId = 1
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!name.trim()) {
+      setError('スキル名を入力してください')
+      return
+    }
+    if (!userId) {
+      setError('ユーザーIDが見つかりません')
+      return
+    }
+    setLoading(true)
+    setError('')
+
+    const formData = new FormData()
+    formData.append('name', name)
+    formData.append('userId', String(userId))
+    if (description.trim()) formData.append('description', description) // ← コメントも送信！
+    if (logo) formData.append('logo', logo)
+
+    try {
+      const res = await fetch('http://localhost:4000/api/skills', {
+        method: 'POST',
+        body: formData,
+      })
+      const json = await res.json()
+      if (!res.ok) {
+        setError(json.message || '登録に失敗しました')
+        return
+      }
+      // 成功後に管理画面トップへリダイレクト
+      window.location.href = '/admin'
+    } catch (err: any) {
+      setError(err.message || '登録に失敗しました')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <Center minH="100vh" bg="gray.50">
+      <Box bg="white" p={8} rounded="2xl" shadow="xl" w="full" maxW="md">
+        <Heading size="lg" mb={6} textAlign="center">
+          スキルを追加
+        </Heading>
+        <form onSubmit={handleSubmit}>
+          <FormControl mb={4}>
+            <FormLabel>スキル名</FormLabel>
+            <Input
+              value={name}
+              onChange={e => setName(e.target.value)}
+              placeholder="例: React"
+              required
+            />
+          </FormControl>
+          <FormControl mb={4}>
+            <FormLabel>コメント（任意）</FormLabel>
+            <Textarea
+              value={description}
+              onChange={e => setDescription(e.target.value)}
+              placeholder="例: 得意な内容や使える技術・アピールポイントなど"
+              rows={3}
+            />
+          </FormControl>
+          <FormControl mb={6}>
+            <FormLabel>ロゴ画像</FormLabel>
+            <Input
+              type="file"
+              name="logo"
+              accept="image/*"
+              onChange={e => setLogo(e.target.files?.[0] ?? null)}
+            />
+          </FormControl>
+          {error && <Text color="red.500" mb={4} textAlign="center">{error}</Text>}
+          <Button
+            type="submit"
+            colorScheme="teal"
+            w="full"
+            isLoading={loading}
+            loadingText="登録中…"
+          >
+            登録
+          </Button>
+        </form>
+      </Box>
+    </Center>
+  )
+}

@@ -11,15 +11,15 @@ router.get("/", async (req, res) => {
 
 // お問い合わせ新規登録（POST：ホームページ）
 router.post("/", async (req, res) => {
-  const { email, message, userId } = req.body;
+  const { email, message } = req.body;
 
-  if (!email || !message || !userId) {
+  if (!email || !message ) {
     return res.status(400).json({ message: "email, message, userIdは必須です" });
   }
 
   try {
     const newContact = await prisma.contact.create({
-      data: { email, message, userId }
+      data: { email, message }
     });
     res.status(201).json(newContact);
   } catch (err) {

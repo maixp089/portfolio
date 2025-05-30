@@ -1,3 +1,6 @@
+'use client';
+import { useRouter } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import {
   Box,
   Heading,
@@ -5,41 +8,67 @@ import {
   Text,
   Image,
   Flex,
+  Center,
+  Spinner,
 } from '@chakra-ui/react';
 import EditButton from './EditButton';
 
-// 仮データ（本番はAPIで取得！）
-const skills = [
-  {
-    name: 'React',
-    description: 'UI開発フレームワーク',
-    imageUrl: '/images/react-logo.png',
-  },
-  {
-    name: 'TypeScript',
-    description: '型安全なJavaScript',
-    imageUrl: '/images/typescript-logo.png',
-  },
-  {
-    name: 'Next.js',
-    description: 'React製のフレームワーク',
-    imageUrl: '/images/nextjs-logo.png',
-  },
-  {
-    name: 'Chakra UI',
-    description: 'スタイリング用UIライブラリ',
-    imageUrl: '/images/chakra-logo.png',
-  },
-];
+type Skill = {
+  id: number;
+  name: string;
+  description?: string;
+  logoUrl?: string;
+};
 
 export default function SkillSection({
   isAdmin = false,
 }: {
   isAdmin?: boolean;
 }) {
+  const router = useRouter();
+  const [skills, setSkills] = useState<Skill[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
+  useEffect(() => {
+    const fetchSkills = async () => {
+      try {
+        const res = await fetch('http://localhost:4000/api/skills');
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.message || '取得に失敗しました');
+        setSkills(data);
+      } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message); 
+        } else {
+          setError('取得に失敗しました');
+        }
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSkills();
+  }, []);
+
   const handleEdit = () => {
-    alert('スキル編集画面へ！（ここをモーダルやページ遷移に）');
+    router.push('/admin/skill/new');
   };
+
+  if (loading) {
+    return (
+      <Center minH="40vh">
+        <Spinner size="xl" color="blue.500" />
+      </Center>
+    );
+  }
+
+  if (error) {
+    return (
+      <Center minH="40vh">
+        <Text color="red.500">{error}</Text>
+      </Center>
+    );
+  }
 
   return (
     <Box as="section" id="skill" py={16} px={4} maxW="1200px" mx="auto">
@@ -57,10 +86,13 @@ export default function SkillSection({
         </Heading>
         <Box flex="1" h="1.5px" bg="gray.300" />
       </Flex>
-      {/* 編集ボタン（コンポーネント） */}
-      {isAdmin && <EditButton onClick={handleEdit} label="編集" />}
-
-      {/* 3〜4つ横並び */}
+      {/* 編集ボタン */}
+      {isAdmin && (
+        <Flex justify="center" mb={4}>
+          <EditButton onClick={handleEdit} label="追加" colorScheme="teal" />
+        </Flex>
+      )}
+      {/* 4つ横並び */}
       <SimpleGrid
         columns={[1, 2, 3, 4]}
         spacing={10}
@@ -69,7 +101,7 @@ export default function SkillSection({
       >
         {skills.map((skill) => (
           <Box
-            key={skill.name}
+            key={skill.id}
             w="260px"
             h="200px"
             border="2px solid #aaa"
@@ -86,17 +118,19 @@ export default function SkillSection({
             transition="box-shadow 0.2s"
             _hover={{ boxShadow: 'xl', borderColor: '#888' }}
           >
-            <Image
-              src={skill.imageUrl}
-              alt={skill.name}
-              w="72px"
-              h="72px"
-              objectFit="contain"
-              borderRadius="lg"
-              mb={3}
-              bg="gray.100"
-              boxShadow="sm"
-            />
+            {skill.logoUrl && (
+              <Image
+                src={`http://localhost:4000/${skill.logoUrl.replace(/^\/?/, '')}`}
+                alt={skill.name}
+                w="72px"
+                h="72px"
+                objectFit="contain"
+                borderRadius="lg"
+                mb={3}
+                bg="gray.100"
+                boxShadow="sm"
+              />
+            )}
             <Text fontSize="lg" fontWeight="bold">
               {skill.name}
             </Text>

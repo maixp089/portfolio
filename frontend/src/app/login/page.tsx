@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation'; // 管理者ページに遷移
 import { Box, Heading, Input, Button, VStack, Text } from '@chakra-ui/react';
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
-import { app } from '../../utils/firebase'; // ← firebase.tsでinitializeAppしたものをexportしている
+import { app } from '../../utils/firebase'; // ← firebase.tsでinitializeAppしたものをexport
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
