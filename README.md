@@ -20,7 +20,10 @@ PORTFOLIO/
 ├── .gitignore       # Git管理対象外ファイル設定（全体）
 └── README.md        # このファイル
 ```
-
+[フロントエンドはコチラ](/frontend/README.md)
+<br>
+[バックエンドはコチラ](/backend/README.md)
+<br>
 [API設計書はコチラ](/docs/API.md)　　
 <br>
 [ER図はコチラ](/docs/ER.md)
