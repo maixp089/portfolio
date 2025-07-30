@@ -24,7 +24,7 @@ router.get("/", async (req, res) => {
 // 実績追加（画像付き）
 router.post("/", upload.single('image'), async (req, res) => {
   console.log('アップロードされたファイル情報:', req.file);
-  const { title, description, userId } = req.body;
+  const { title, description, userId , url } = req.body;
   const imageFile = req.file;
 
   const userIdInt = Number(userId); // フロントから送られてくるIDが文字列になってしまっているから
@@ -39,7 +39,7 @@ router.post("/", upload.single('image'), async (req, res) => {
   try {
     // 1. Portfolio作成
     const newPortfolio = await prisma.portfolio.create({
-      data: { title, description, userId: userIdInt}
+      data: { title, description, userId: userIdInt, url}
     });
 
     // 2. Imageレコードも作成
@@ -54,6 +54,32 @@ router.post("/", upload.single('image'), async (req, res) => {
   } catch (err) {
     console.error('登録エラー:', err);
     res.status(500).json({ message: "登録に失敗しました", error: err });
+  }
+});
+
+// 指定実績を削除
+router.delete("/:id", async (req, res) => {
+  const id = Number(req.params.id);
+
+  if (isNaN(id)) {
+    return res.status(400).json({ message: "IDは数値で指定してください" });
+  }
+
+  try {
+    // 関連画像を削除（onDelete: Cascadeにしてなければ必要）
+    await prisma.image.deleteMany({
+      where: { portfolioId: id },
+    });
+
+    // 実績削除
+    await prisma.portfolio.delete({
+      where: { id },
+    });
+
+    res.status(200).json({ message: `ID ${id} の実績を削除しました` });
+  } catch (err) {
+    console.error("削除エラー:", err);
+    res.status(500).json({ message: "削除に失敗しました", error: String(err) });
   }
 });
 

@@ -10,6 +10,7 @@ import {
   Flex,
   Center,
   Spinner,
+  Link,
 } from '@chakra-ui/react';
 import EditButton from './EditButton';
 
@@ -17,6 +18,7 @@ type Project = {
   id: number;
   title: string;
   description?: string;
+  url?: string;
   images?: { url: string }[];
 };
 
@@ -39,7 +41,7 @@ export default function ProjectSection({
         setProjects(data);
       } catch (err: unknown) {
         if (err instanceof Error) {
-          setError(err.message); 
+          setError(err.message);
         } else {
           setError('取得に失敗しました');
         }
@@ -56,10 +58,29 @@ export default function ProjectSection({
   };
 
   // 削除処理（サンプル）
-  const handleDelete = (id: number) => {
-    if (window.confirm('本当に削除しますか？')) {
-      alert(`${id} を削除しました！（本番はAPIで削除）`);
-      // 実際はAPIでDELETEリクエストを送信し、リロードや再取得も必要
+  const handleDelete = async (id: number) => {
+    if (!window.confirm('本当に削除しますか？')) return;
+
+    try {
+      const res = await fetch(`http://localhost:4000/api/portfolios/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!res.ok) {
+        throw new Error('削除リクエストに失敗しました');
+      }
+
+      alert(`削除しました！`);
+
+      // 再取得する or state更新
+      // 例）ポートフォリオ一覧を再取得する関数があるなら呼ぶ
+      // await fetchPortfolios();
+
+      // もしくは手軽にページ再読み込み
+      window.location.reload();
+    } catch (err) {
+      console.error('削除エラー:', err);
+      alert('削除に失敗しました');
     }
   };
 
@@ -148,6 +169,18 @@ export default function ProjectSection({
             <Text color="gray.500" mt={1}>
               {project.description}
             </Text>
+            {project.url && (
+              <Link
+                href={project.url}
+                isExternal
+                color="blue.500"
+                mt={2}
+                _hover={{ textDecoration: 'underline' }}
+              >
+                ▶ サイトを見る
+              </Link>
+            )}
+
             {/* 変更・削除ボタン（管理者のみ表示） */}
             {isAdmin && (
               <Flex gap={2} mt={2} justify="center">
