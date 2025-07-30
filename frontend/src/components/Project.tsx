@@ -20,7 +20,7 @@ type Project = {
   description?: string;
   url?: string;
   urlType?: 'demo' | 'site';
-  images?: { url: string }[];
+  imageUrl?: string;
 };
 
 export default function ProjectSection({
@@ -151,9 +151,9 @@ export default function ProjectSection({
             _hover={{ boxShadow: 'xl', borderColor: '#888' }}
           >
             {/* 画像がある場合だけ表示 */}
-            {project.images && project.images[0]?.url && (
+            {project.imageUrl && (
               <Image
-                src={`http://localhost:4000/${project.images[0].url.replace(/^\/?/, '')}`}
+                src={`http://localhost:4000/${project.imageUrl.replace(/^\/?/, '')}`}
                 alt={project.title}
                 w="400px"
                 h="200px"

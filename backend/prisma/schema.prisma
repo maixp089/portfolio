@@ -23,7 +23,7 @@ model Portfolio {
   description String?
   url         String?
   urlType     String? 
-  images      Image[]
+  imageUrl    String?
   user        User     @relation(fields: [userId], references: [id])
   userId      Int
 }
@@ -42,10 +42,4 @@ model Contact {
   message String
   email   String
 }
-// 画像（ポートフォリオの）
-model Image {
-  id           Int         @id @default(autoincrement())
-  url          String
-  portfolio    Portfolio   @relation(fields: [portfolioId], references: [id])
-  portfolioId  Int
-}
+

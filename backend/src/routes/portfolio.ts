@@ -11,7 +11,6 @@ const upload = multer({ dest: 'uploads/' }); // とりあえずローカルに�
 router.get("/", async (req, res) => {
   try {
     const portfolios = await prisma.portfolio.findMany({
-      include: { images: true },
       orderBy: { id: 'desc' },
     });
     res.json(portfolios);
@@ -22,10 +21,10 @@ router.get("/", async (req, res) => {
   }
 });
 
-// プロジェクト追加（画像付き）
+// プロジェクト追加
 router.post("/", upload.single('image'), async (req, res) => {
   console.log('アップロードされたファイル情報:', req.file);
-  const { title, description, userId , url , urlType} = req.body;
+  const { title, description, userId , url , urlType } = req.body;
   const imageFile = req.file;
 
   const userIdInt = Number(userId); // フロントから送られてくるIDが文字列になってしまっているから
@@ -38,18 +37,11 @@ router.post("/", upload.single('image'), async (req, res) => {
   }
 
   try {
-    // 1. Portfolio作成
     const newPortfolio = await prisma.portfolio.create({
-      data: { title, description, userId: userIdInt, url , urlType ,}
+      data: { title, description, userId: userIdInt, url , urlType ,imageUrl: imageFile.path , }
     });
-
-    // 2. Imageレコードも作成
-    await prisma.image.create({
-      data: {
-        url: imageFile.path, // とりあえずローカルに
-        portfolioId: newPortfolio.id
-      }
-    });
+console.log("imageFile:", imageFile);
+console.log("image path:", imageFile?.path);
 
     res.status(201).json({ ...newPortfolio, imageUrl: imageFile.path });
   } catch (err) {
@@ -67,10 +59,6 @@ router.delete("/:id", async (req, res) => {
   }
 
   try {
-    // 関連画像を削除
-    await prisma.image.deleteMany({
-      where: { portfolioId: id },
-    });
 
     // プロジェクト削除
     await prisma.portfolio.delete({
@@ -86,7 +74,7 @@ router.delete("/:id", async (req, res) => {
 // プロジェクトを更新
 router.put("/:id", async (req, res) => {
   const id = Number(req.params.id);
-  const { title, description, url, urlType } = req.body;
+  const { title, description, url, urlType , imageUrl} = req.body;
 
   try {
     const updated = await prisma.portfolio.update({
@@ -96,6 +84,7 @@ router.put("/:id", async (req, res) => {
         description,
         url,
         urlType,
+        imageUrl,
       }
     });
     res.json(updated);
