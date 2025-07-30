@@ -7,7 +7,7 @@ const prisma = new PrismaClient();
 // multerセット
 const upload = multer({ dest: 'uploads/' }); // とりあえずローカルに保存（backend/uploads）
 
-// GET実績一覧
+// GET/プロジェクト一覧
 router.get("/", async (req, res) => {
   try {
     const portfolios = await prisma.portfolio.findMany({
@@ -22,7 +22,7 @@ router.get("/", async (req, res) => {
   }
 });
 
-// 実績追加（画像付き）
+// プロジェクト追加（画像付き）
 router.post("/", upload.single('image'), async (req, res) => {
   console.log('アップロードされたファイル情報:', req.file);
   const { title, description, userId , url , urlType} = req.body;
@@ -50,7 +50,7 @@ router.post("/", upload.single('image'), async (req, res) => {
         portfolioId: newPortfolio.id
       }
     });
-    
+
     res.status(201).json({ ...newPortfolio, imageUrl: imageFile.path });
   } catch (err) {
     console.error('登録エラー:', err);
@@ -58,7 +58,7 @@ router.post("/", upload.single('image'), async (req, res) => {
   }
 });
 
-// 指定実績を削除
+// 指定プロジェクトを削除
 router.delete("/:id", async (req, res) => {
   const id = Number(req.params.id);
 
@@ -67,12 +67,12 @@ router.delete("/:id", async (req, res) => {
   }
 
   try {
-    // 関連画像を削除（onDelete: Cascadeにしてなければ必要）
+    // 関連画像を削除
     await prisma.image.deleteMany({
       where: { portfolioId: id },
     });
 
-    // 実績削除
+    // プロジェクト削除
     await prisma.portfolio.delete({
       where: { id },
     });
@@ -81,6 +81,26 @@ router.delete("/:id", async (req, res) => {
   } catch (err) {
     console.error("削除エラー:", err);
     res.status(500).json({ message: "削除に失敗しました", error: String(err) });
+  }
+});
+// プロジェクトを更新
+router.put("/:id", async (req, res) => {
+  const id = Number(req.params.id);
+  const { title, description, url, urlType } = req.body;
+
+  try {
+    const updated = await prisma.portfolio.update({
+      where: { id },
+      data: {
+        title,
+        description,
+        url,
+        urlType,
+      }
+    });
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ message: "更新に失敗しました", error: String(err) });
   }
 });
 
