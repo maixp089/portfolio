@@ -18,6 +18,8 @@ export default function AddProjectPage() {
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [urlType, setUrlType] = useState('');
+  const [url, setUrl] = useState('');
   const [image, setImage] = useState<File | null>(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
@@ -44,6 +46,8 @@ export default function AddProjectPage() {
     formData.append('title', title);
     formData.append('description', description);
     formData.append('image', image);
+    formData.append('url', url);
+    formData.append('urlType', urlType); // ←これ追加！
     formData.append('userId', String(userId)); // 必ず文字列で渡す
 
     try {
@@ -92,6 +96,26 @@ export default function AddProjectPage() {
               onChange={(e) => setDescription(e.target.value)}
               placeholder="どんな内容かを入力"
               rows={3}
+            />
+          </FormControl>
+          <FormControl mb={4}>
+            <FormLabel>リンクの種類</FormLabel>
+            <select
+              value={urlType}
+              onChange={(e) => setUrlType(e.target.value)}
+              style={{ padding: '8px', borderRadius: '6px', width: '100%' }}
+            >
+              <option value="">選択してください</option>
+              <option value="demo">デモ動画</option>
+              <option value="site">サイト</option>
+            </select>
+          </FormControl>
+          <FormControl mb={4}>
+            <FormLabel>URL</FormLabel>
+            <Input
+              value={url}
+              onChange={(e) => setUrl(e.target.value)}
+              placeholder="https://example.com"
             />
           </FormControl>
           <FormControl mb={6}>

@@ -19,6 +19,7 @@ type Project = {
   title: string;
   description?: string;
   url?: string;
+  urlType?: 'demo' | 'site';
   images?: { url: string }[];
 };
 
@@ -169,15 +170,17 @@ export default function ProjectSection({
             <Text color="gray.500" mt={1}>
               {project.description}
             </Text>
-            {project.url && (
+            {project.url && project.urlType && (
               <Link
                 href={project.url}
                 isExternal
                 color="blue.500"
                 mt={2}
+                fontWeight="medium"
                 _hover={{ textDecoration: 'underline' }}
               >
-                ▶ サイトを見る
+                ▶{' '}
+                {project.urlType === 'demo' ? 'デモ動画を見る' : 'サイトを見る'}
               </Link>
             )}
 

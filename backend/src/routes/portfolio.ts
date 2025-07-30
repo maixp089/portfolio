@@ -15,6 +15,7 @@ router.get("/", async (req, res) => {
       orderBy: { id: 'desc' },
     });
     res.json(portfolios);
+    console.log(portfolios); 
   } catch (err) {
     console.error('一覧取得エラー:', err);
     res.status(500).json({ message: "一覧取得に失敗しました", error: String(err) });
@@ -24,7 +25,7 @@ router.get("/", async (req, res) => {
 // 実績追加（画像付き）
 router.post("/", upload.single('image'), async (req, res) => {
   console.log('アップロードされたファイル情報:', req.file);
-  const { title, description, userId , url } = req.body;
+  const { title, description, userId , url , urlType} = req.body;
   const imageFile = req.file;
 
   const userIdInt = Number(userId); // フロントから送られてくるIDが文字列になってしまっているから
@@ -39,7 +40,7 @@ router.post("/", upload.single('image'), async (req, res) => {
   try {
     // 1. Portfolio作成
     const newPortfolio = await prisma.portfolio.create({
-      data: { title, description, userId: userIdInt, url}
+      data: { title, description, userId: userIdInt, url , urlType ,}
     });
 
     // 2. Imageレコードも作成
@@ -49,7 +50,7 @@ router.post("/", upload.single('image'), async (req, res) => {
         portfolioId: newPortfolio.id
       }
     });
-
+    
     res.status(201).json({ ...newPortfolio, imageUrl: imageFile.path });
   } catch (err) {
     console.error('登録エラー:', err);
