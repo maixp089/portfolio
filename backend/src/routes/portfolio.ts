@@ -21,6 +21,30 @@ router.get("/", async (req, res) => {
   }
 });
 
+// GET/プロジェクト１件
+router.get("/:id", async (req, res) => {
+  const id = Number(req.params.id);
+
+  if (isNaN(id)) {
+    return res.status(400).json({ message: "IDは数値で指定してください" });
+  }
+
+  try {
+    const project = await prisma.portfolio.findUnique({
+      where: { id },
+    });
+
+    if (!project) {
+      return res.status(404).json({ message: `ID ${id} のプロジェクトが見つかりませんでした` });
+    }
+
+    res.json(project);
+  } catch (err) {
+    console.error("取得エラー:", err);
+    res.status(500).json({ message: "取得に失敗しました", error: String(err) });
+  }
+});
+
 // プロジェクト追加
 router.post("/", upload.single('image'), async (req, res) => {
   console.log('アップロードされたファイル情報:', req.file);
@@ -40,8 +64,6 @@ router.post("/", upload.single('image'), async (req, res) => {
     const newPortfolio = await prisma.portfolio.create({
       data: { title, description, userId: userIdInt, url , urlType ,imageUrl: imageFile.path , }
     });
-console.log("imageFile:", imageFile);
-console.log("image path:", imageFile?.path);
 
     res.status(201).json({ ...newPortfolio, imageUrl: imageFile.path });
   } catch (err) {
