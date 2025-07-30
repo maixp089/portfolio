@@ -2,7 +2,7 @@
 
 | メソッド | エンドポイント            | 概要                     | リクエスト例                       | レスポンス例                       |
 |----------|--------------------------|--------------------------|------------------------------------|------------------------------------|
-| GET      | `/api/portfolios`        | ポートフォリオ一覧取得   |                                    | `[{ id, title, description, ... }]`|
+| GET      | `/api/portfolios`        | ポートフォリオ一覧取/得   |                                    | `[{ id, title, description, ... }]`|
 | GET      | `/api/portfolios/:id`    | ポートフォリオ詳細取得   |                                    | `{ id, title, ... }`               |
 | POST     | `/api/portfolios`        | ポートフォリオ新規登録   | `{ title, description, userId }`   | `{ id, title, ... }`               |
 | PUT      | `/api/portfolios/:id`    | ポートフォリオ編集       | `{ title?, description? }`         | `{ id, title, ... }`               |
