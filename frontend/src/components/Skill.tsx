@@ -39,7 +39,7 @@ export default function SkillSection({
         setSkills(data);
       } catch (err: unknown) {
         if (err instanceof Error) {
-          setError(err.message); 
+          setError(err.message);
         } else {
           setError('取得に失敗しました');
         }
@@ -49,26 +49,46 @@ export default function SkillSection({
     };
     fetchSkills();
   }, []);
-
-  const handleEdit = () => {
-    router.push('/admin/skill/new');
+  // 編集遷移
+  const handleEdit = (id: number) => {
+    router.push(`/admin/skill/${id}/edit`);
   };
 
-  if (loading) {
-    return (
-      <Center minH="40vh">
-        <Spinner size="xl" color="blue.500" />
-      </Center>
-    );
-  }
+  // 削除処理（サンプル）
+  const handleDelete = async (id: number) => {
+    if (!window.confirm('本当に削除しますか？')) return;
 
-  if (error) {
-    return (
-      <Center minH="40vh">
-        <Text color="red.500">{error}</Text>
-      </Center>
-    );
-  }
+    try {
+      const res = await fetch(`http://localhost:4000/api/skills/${id}`, {
+        method: 'DELETE',
+      });
+
+      if (!res.ok) {
+        throw new Error('削除リクエストに失敗しました');
+      }
+
+      alert(`削除しました！`);
+      window.location.reload();
+    } catch (err) {
+      console.error('削除エラー:', err);
+      alert('削除に失敗しました');
+    }
+  };
+  if (loading) {
+  return (
+    <Center minH="70vh">
+      <Spinner size="xl" color="blue.500" />
+    </Center>
+  );
+}
+
+if (error) {
+  return (
+    <Center minH="70vh">
+      <Text color="red.500">{error}</Text>
+    </Center>
+  );
+}
 
   return (
     <Box as="section" id="skill" py={16} px={4} maxW="1200px" mx="auto">
@@ -86,10 +106,14 @@ export default function SkillSection({
         </Heading>
         <Box flex="1" h="1.5px" bg="gray.300" />
       </Flex>
-      {/* 編集ボタン */}
+      {/* 追加ボタン */}
       {isAdmin && (
         <Flex justify="center" mb={4}>
-          <EditButton onClick={handleEdit} label="追加" colorScheme="teal" />
+          <EditButton
+            onClick={() => router.push('/admin/skill/new')}
+            label="追加"
+            colorScheme="teal"
+          />
         </Flex>
       )}
       {/* 4つ横並び */}
@@ -103,7 +127,7 @@ export default function SkillSection({
           <Box
             key={skill.id}
             w="260px"
-            h="200px"
+            h="auto"
             border="2px solid #aaa"
             borderRadius="xl"
             p={6}
@@ -137,6 +161,23 @@ export default function SkillSection({
             <Text color="gray.500" mt={1}>
               {skill.description}
             </Text>
+            {/* 変更・削除ボタン（管理者のみ表示） */}
+            {isAdmin && (
+              <Flex gap={2} mt={2} justify="center">
+                <EditButton
+                  onClick={() => handleEdit(skill.id)}
+                  label="変更"
+                  colorScheme="blue"
+                  size="sm"
+                />
+                <EditButton
+                  onClick={() => handleDelete(skill.id)}
+                  label="削除"
+                  colorScheme="red"
+                  size="sm"
+                />
+              </Flex>
+            )}
           </Box>
         ))}
       </SimpleGrid>
