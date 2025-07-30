@@ -113,7 +113,7 @@ export default function ProjectSection({
           <Box
             key={project.id}
             w="500px"
-            h="300px"
+            h="auto"
             border="2px solid #aaa"
             borderRadius="xl"
             p={6}

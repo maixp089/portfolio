@@ -12,7 +12,7 @@ router.get("/", async (req, res) => {
   try {
     const portfolios = await prisma.portfolio.findMany({
       include: { images: true },
-      orderBy: { id: 'asc' },
+      orderBy: { id: 'desc' },
     });
     res.json(portfolios);
   } catch (err) {
