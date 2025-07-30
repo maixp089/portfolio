@@ -18,6 +18,30 @@ router.get("/", async (req, res) => {
   }
 });
 
+// Skill一件GET
+router.get("/:id", async (req, res) => {
+  const id = Number(req.params.id);
+
+  if (isNaN(id)) {
+    return res.status(400).json({ message: "IDは数値で指定してください" });
+  }
+
+  try {
+    const skill = await prisma.skill.findUnique({
+      where: { id },
+    });
+
+    if (!skill) {
+      return res.status(404).json({ message: `ID ${id} のプロジェクトが見つかりませんでした` });
+    }
+
+    res.json(skill);
+  } catch (err) {
+    console.error("取得エラー:", err);
+    res.status(500).json({ message: "取得に失敗しました", error: String(err) });
+  }
+});
+
 // Skill追加（画像付き）
 router.post("/", upload.single('logo'), async (req, res) => {
   try {
@@ -43,5 +67,31 @@ router.post("/", upload.single('logo'), async (req, res) => {
     res.status(500).json({ message: "Skill登録に失敗しました", error: String(err) });
   }
 });
+
+// Skillを更新
+router.put("/:id", upload.single('logo'), async (req, res) => {
+  const id = Number(req.params.id);
+  if (isNaN(id)) {
+    return res.status(400).json({ message: "IDは数値で指定してください" });
+  }
+
+  const { name, description } = req.body;
+  const logoFile = req.file;
+  
+  try {
+    const updated = await prisma.skill.update({
+      where: { id },
+      data: {
+        name,
+        logoUrl: logoFile ? logoFile.path : null, // ファイルがある場合のみ保存
+        description,
+      }
+    });
+    res.json(updated);
+  } catch (err) {
+    res.status(500).json({ message: "更新に失敗しました", error: String(err) });
+  }
+});
+
 
 export default router;
