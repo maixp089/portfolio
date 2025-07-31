@@ -77,7 +77,7 @@ export default function AddProjectPage() {
     <Center minH="100vh" bg="gray.50">
       <Box bg="white" p={8} rounded="2xl" shadow="xl" w="full" maxW="md">
         <Heading size="lg" mb={6} textAlign="center">
-          実績を追加
+          プロジェクトを追加
         </Heading>
         <form onSubmit={handleSubmit}>
           <FormControl mb={4}>

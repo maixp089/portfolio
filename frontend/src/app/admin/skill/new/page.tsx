@@ -43,8 +43,12 @@ export default function AddSkillPage() {
       }
       // 成功後に管理画面トップへリダイレクト
       window.location.href = '/admin'
-    } catch (err: any) {
-      setError(err.message || '登録に失敗しました')
+    } catch (err: unknown) {
+        if (err instanceof Error) {
+          setError(err.message);
+        } else {
+          setError('登録に失敗しました');
+        }
     } finally {
       setLoading(false)
     }

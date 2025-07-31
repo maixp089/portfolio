@@ -76,7 +76,7 @@ export default function EditProjectPage() {
   return (
     <Center minH="100vh" bg="gray.50">
       <Box bg="white" p={8} rounded="2xl" shadow="xl" w="full" maxW="md">
-        <Heading size="lg" mb={6} textAlign="center">実績を編集</Heading>
+        <Heading size="lg" mb={6} textAlign="center">プロジェクトを編集</Heading>
         <form onSubmit={handleUpdate}>
           <FormControl mb={4}>
             <FormLabel>タイトル</FormLabel>
