@@ -151,8 +151,8 @@ if (error) {
                 objectFit="contain"
                 borderRadius="lg"
                 mb={3}
-                bg="gray.100"
-                boxShadow="sm"
+                // bg="transparent"
+                // boxShadow="sm"
               />
             )}
             <Text fontSize="lg" fontWeight="bold">
@@ -182,7 +182,7 @@ if (error) {
         ))}
       </SimpleGrid>
       <Text textAlign="center" color="gray.600" fontSize="md">
-        習得中＆主な技術スタックです。
+        学習・個人開発で使ったことのある技術一覧です。
       </Text>
     </Box>
   );

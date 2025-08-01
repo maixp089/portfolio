@@ -4,7 +4,7 @@ import multerS3 from 'multer-s3';
 import { S3Client } from '@aws-sdk/client-s3';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
-import { DeleteObjectCommand } from "@aws-sdk/client-s3"; // S3でファイルを削除するためのクラス
+import { DeleteObjectCommand } from '@aws-sdk/client-s3'; // S3でファイルを削除するためのクラス
 
 dotenv.config();
 const router = express.Router();
@@ -147,9 +147,10 @@ router.put('/:id', upload.single('logo'), async (req, res) => {
   }
 
   const { name, description } = req.body;
-  const logoFile = req.file;
+  // S3で画像保存する
+  const logoFile = req.file as Express.MulterS3.File;
 
-  // 条件付きでdataオブジェクトを構築
+  // 更新用オブジェクト
   const updateData: {
     name?: string;
     description?: string;
@@ -158,13 +159,35 @@ router.put('/:id', upload.single('logo'), async (req, res) => {
 
   if (name) updateData.name = name;
   if (description) updateData.description = description;
-  if (logoFile) updateData.logoUrl = logoFile.path;
 
   try {
+     // 1. 既存のSkill情報を取得
+    const skill = await prisma.skill.findUnique({ where: { id } });
+    if (!skill) {
+      return res.status(404).json({ message: `ID ${id} のスキルが見つかりませんでした` });
+    }
+    // 2. 画像アップロードがあれば
+    if (logoFile) {
+      // 2-1. 既存画像があればS3から削除
+      if (skill.logoUrl) {
+        const s3Key = skill.logoUrl.split('.amazonaws.com/')[1];
+        if (s3Key) {
+          const delCmd = new DeleteObjectCommand({
+            Bucket: process.env.AWS_S3_BUCKET_NAME!,
+            Key: s3Key,
+          });
+          await s3.send(delCmd);
+        }
+      }
+      // 2-2. 新しいS3画像URLを保存
+      updateData.logoUrl = logoFile.location;
+    }
+    // 3. Skillを更新
     const updated = await prisma.skill.update({
       where: { id },
       data: updateData,
     });
+    
     res.json(updated);
   } catch (err: unknown) {
     console.error('更新エラー:', err);
