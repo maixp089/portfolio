@@ -144,7 +144,7 @@ if (error) {
           >
             {skill.logoUrl && (
               <Image
-                src={`http://localhost:4000/${skill.logoUrl.replace(/^\/?/, '')}`}
+                src={skill.logoUrl}
                 alt={skill.name}
                 w="72px"
                 h="72px"
