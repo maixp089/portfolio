@@ -1,10 +1,36 @@
 import express from 'express';
 import multer from 'multer';
+import multerS3 from 'multer-s3';
+import { S3Client, DeleteObjectCommand } from '@aws-sdk/client-s3';
 import { PrismaClient } from '@prisma/client';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const router = express.Router();
 const prisma = new PrismaClient();
-const upload = multer({ dest: 'uploads/' }); // シンプルに設定
+
+// S3クライアント設定
+const s3 = new S3Client({
+  region: process.env.AWS_REGION!,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
+});
+
+// multerS3ストレージ設定
+const upload = multer({
+  storage: multerS3({
+    s3,
+    bucket: process.env.AWS_S3_BUCKET_NAME!,
+    contentType: multerS3.AUTO_CONTENT_TYPE,
+    key: (_req, file, cb) => {
+      const filename = `portfolio/${Date.now()}-${file.originalname}`;
+      cb(null, filename);
+    },
+  }),
+});
 
 // 一覧取得
 router.get('/', async (_req, res) => {
@@ -15,7 +41,9 @@ router.get('/', async (_req, res) => {
     res.json(portfolios);
   } catch (err) {
     console.error('一覧取得エラー:', err);
-    res.status(500).json({ message: '一覧取得に失敗しました', error: String(err) });
+    res
+      .status(500)
+      .json({ message: '一覧取得に失敗しました', error: String(err) });
   }
 });
 
@@ -29,7 +57,9 @@ router.get('/:id', async (req, res) => {
   try {
     const portfolio = await prisma.portfolio.findUnique({ where: { id } });
     if (!portfolio) {
-      return res.status(404).json({ message: `ID ${id} のポートフォリオが見つかりませんでした` });
+      return res
+        .status(404)
+        .json({ message: `ID ${id} のポートフォリオが見つかりませんでした` });
     }
     res.json(portfolio);
   } catch (err) {
@@ -41,12 +71,12 @@ router.get('/:id', async (req, res) => {
 // 追加
 router.post('/', upload.single('image'), async (req, res) => {
   const { title, description, userId, url, urlType } = req.body;
-  const imageFile = req.file;
+  // 型アサーションでS3ファイル型に
+  const imageFile = req.file as Express.MulterS3.File;
 
   if (!title || !userId) {
     return res.status(400).json({ message: 'titleとuserIdは必須です' });
   }
-
   if (!imageFile) {
     return res.status(400).json({ message: '画像ファイルが必要です' });
   }
@@ -60,7 +90,7 @@ router.post('/', upload.single('image'), async (req, res) => {
         userId: userIdInt,
         url,
         urlType,
-        imageUrl: imageFile.path,
+        imageUrl: imageFile.location, // S3のURLを保存
       },
     });
     res.status(201).json(newPortfolio);
@@ -70,7 +100,7 @@ router.post('/', upload.single('image'), async (req, res) => {
   }
 });
 
-// 削除
+// 削除（S3画像も削除）
 router.delete('/:id', async (req, res) => {
   const id = Number(req.params.id);
   if (isNaN(id)) {
@@ -80,18 +110,32 @@ router.delete('/:id', async (req, res) => {
   try {
     const portfolio = await prisma.portfolio.findUnique({ where: { id } });
     if (!portfolio) {
-      return res.status(404).json({ message: `ID ${id} のポートフォリオが見つかりませんでした` });
+      return res
+        .status(404)
+        .json({ message: `ID ${id} のポートフォリオが見つかりませんでした` });
     }
-
+    // S3画像も削除
+    if (portfolio.imageUrl) {
+      const s3Key = portfolio.imageUrl.split('.amazonaws.com/')[1];
+      if (s3Key) {
+        const delCmd = new DeleteObjectCommand({
+          Bucket: process.env.AWS_S3_BUCKET_NAME!,
+          Key: s3Key,
+        });
+        await s3.send(delCmd);
+      }
+    }
     await prisma.portfolio.delete({ where: { id } });
-    res.status(200).json({ message: `ID ${id} のポートフォリオを削除しました` });
+    res
+      .status(200)
+      .json({ message: `ID ${id} のポートフォリオを削除しました` });
   } catch (err) {
     console.error('削除エラー:', err);
     res.status(500).json({ message: '削除に失敗しました', error: String(err) });
   }
 });
 
-// 更新
+// 更新（画像が変わった場合は古いS3画像も削除）
 router.put('/:id', upload.single('image'), async (req, res) => {
   const id = Number(req.params.id);
   if (isNaN(id)) {
@@ -99,8 +143,9 @@ router.put('/:id', upload.single('image'), async (req, res) => {
   }
 
   const { title, description, url, urlType } = req.body;
-  const imageFile = req.file;
+  const imageFile = req.file as Express.MulterS3.File;
 
+  // 更新データ組み立て
   const updateData: {
     title?: string;
     description?: string;
@@ -116,11 +161,33 @@ router.put('/:id', upload.single('image'), async (req, res) => {
   if (imageFile) updateData.imageUrl = imageFile.path;
 
   try {
+    // 既存ポートフォリオ取得
+    const portfolio = await prisma.portfolio.findUnique({ where: { id } });
+    if (!portfolio) {
+      return res.status(404).json({ message: `ID ${id} のポートフォリオが見つかりませんでした` });
+    }
+
+   // 新しい画像があれば
+    if (imageFile) {
+      // 古いS3画像を削除
+      if (portfolio.imageUrl) {
+        const s3Key = portfolio.imageUrl.split('.amazonaws.com/')[1];
+        if (s3Key) {
+          const delCmd = new DeleteObjectCommand({
+            Bucket: process.env.AWS_S3_BUCKET_NAME!,
+            Key: s3Key,
+          });
+          await s3.send(delCmd);
+        }
+      }
+      updateData.imageUrl = imageFile.location; // 新しいS3画像のURL保存
+    }
+
+    // 更新
     const updated = await prisma.portfolio.update({
       where: { id },
       data: updateData,
     });
-
     res.json(updated);
   } catch (err) {
     console.error('更新エラー:', err);

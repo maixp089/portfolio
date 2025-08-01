@@ -182,7 +182,7 @@ if (error) {
         ))}
       </SimpleGrid>
       <Text textAlign="center" color="gray.600" fontSize="md">
-        学習・個人開発で使ったことのある技術一覧です。
+        学習・開発で使用したことのある技術一覧です。
       </Text>
     </Box>
   );
