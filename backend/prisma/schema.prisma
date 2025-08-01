@@ -23,7 +23,7 @@ model Portfolio {
   description String?
   url         String?
   urlType     String? 
-  imageUrl    String?
+  imageUrl    String? @db.VarChar(1024) 
   user        User     @relation(fields: [userId], references: [id])
   userId      Int
 }
@@ -33,7 +33,7 @@ model Skill {
   name   String
   user   User   @relation(fields: [userId], references: [id])
   userId Int
-  logoUrl String?
+  logoUrl String? @db.VarChar(1024) 
   description String?
 }
 // 問合せ
