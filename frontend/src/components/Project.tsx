@@ -153,7 +153,7 @@ export default function ProjectSection({
             {/* 画像がある場合だけ表示 */}
             {project.imageUrl && (
               <Image
-                src={`http://localhost:4000/${project.imageUrl.replace(/^\/?/, '')}`}
+                src={project.imageUrl}
                 alt={project.title}
                 w="400px"
                 h="200px"
