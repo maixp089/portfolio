@@ -41,7 +41,7 @@ export default function HeroSection() {
           textAlign="center" // ←ここをcenterに！
           fontFamily="'Zen Maru Gothic', 'M PLUS Rounded 1c', sans-serif"
         >
-          向上心を武器に、
+          好奇心を武器に、
           <br />
           新しいことに挑戦し続ける
           <br />

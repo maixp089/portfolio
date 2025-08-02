@@ -5,16 +5,22 @@ const prisma = new PrismaClient();
 
 // お問い合わせ一覧取得（GET：管理者ページ)
 router.get("/", async (req, res) => {
-  const contacts = await prisma.contact.findMany();
-  res.json(contacts);
+  try {
+    const contacts = await prisma.contact.findMany({
+      orderBy: { createdAt: "desc" }, // 新着順で取得
+    });
+    res.json(contacts);
+  } catch (err) {
+    res.status(500).json({ message: "取得に失敗しました", error: String(err) });
+  }
 });
 
 // お問い合わせ新規登録（POST：ホームページ）
 router.post("/", async (req, res) => {
   const { email, message } = req.body;
 
-  if (!email || !message ) {
-    return res.status(400).json({ message: "email, message, userIdは必須です" });
+  if (!email || !message) {
+    return res.status(400).json({ message: "emailとmessageは必須です" });
   }
 
   try {
@@ -23,8 +29,9 @@ router.post("/", async (req, res) => {
     });
     res.status(201).json(newContact);
   } catch (err) {
-    res.status(500).json({ message: "登録に失敗しました", error: err });
+    res.status(500).json({ message: "登録に失敗しました", error: String(err) });
   }
 });
 
 export default router;
+
