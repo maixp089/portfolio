@@ -1,14 +1,24 @@
-"use client";
-import { useEffect, useState } from "react";
+'use client';
+import { useEffect, useState } from 'react';
 import {
-  Box, Heading, Table, Thead, Tbody, Tr, Th, Td, Spinner, Text,
-} from "@chakra-ui/react";
+  Box,
+  Heading,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+  Spinner,
+  Text,
+} from '@chakra-ui/react';
 
 type Contact = {
   id: number;
+  name: string;
   email: string;
   message: string;
-  // 必要ならname, createdAtなど他のフィールドも追加
+  createdAt: string;
 };
 
 export default function AdminContactPage() {
@@ -18,7 +28,7 @@ export default function AdminContactPage() {
   useEffect(() => {
     const fetchContacts = async () => {
       try {
-        const res = await fetch("http://localhost:4000/api/contacts");
+        const res = await fetch('http://localhost:4000/api/contacts');
         const data = await res.json();
         setContacts(data);
       } catch (err) {
@@ -32,7 +42,9 @@ export default function AdminContactPage() {
 
   return (
     <Box maxW="800px" mx="auto" py={12} px={4}>
-      <Heading size="lg" mb={8}>お問い合わせ一覧</Heading>
+      <Heading size="lg" mb={8}>
+        お問い合わせ一覧
+      </Heading>
       {loading ? (
         <Spinner size="lg" />
       ) : contacts.length === 0 ? (
@@ -42,18 +54,28 @@ export default function AdminContactPage() {
           <Thead>
             <Tr>
               <Th>ID</Th>
+              <Th>名前</Th>
               <Th>メールアドレス</Th>
               <Th>メッセージ</Th>
-              {/* <Th>名前</Th> 追加項目があればここに */}
+              <Th>日時</Th>
             </Tr>
           </Thead>
           <Tbody>
             {contacts.map((c) => (
               <Tr key={c.id}>
                 <Td>{c.id}</Td>
+                <Td>{c.name}</Td>
                 <Td>{c.email}</Td>
                 <Td>{c.message}</Td>
-                {/* <Td>{c.name}</Td> */}
+                <Td>
+                  {new Date(c.createdAt).toLocaleString('ja-JP', {
+                    year: 'numeric',
+                    month: '2-digit',
+                    day: '2-digit',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                  })}
+                </Td>
               </Tr>
             ))}
           </Tbody>
