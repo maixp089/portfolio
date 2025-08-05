@@ -40,7 +40,9 @@ export default function ContactSection({
       </Flex>
       <Text color="gray.500" mb={10} fontSize="lg">
         ポートフォリオをご覧いただきありがとうございます。
-        採用やご質問など、お気軽にご連絡いただけると嬉しいです！
+        どんなことでもお気軽にご連絡いただけると嬉しいです！
+        <br />
+        いただいた内容にはできるだけ早くお返事いたします。
       </Text>
       <Flex justify="center">
         {isAdmin ? (
@@ -64,7 +66,7 @@ export default function ContactSection({
               color: 'white',
             }}
           >
-            お問い合わせはこちら
+            お問い合わせフォームへ
           </Button>
         )}
       </Flex>
