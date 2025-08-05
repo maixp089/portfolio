@@ -1,17 +1,17 @@
-import { Box, Flex, Text, Link, Button } from "@chakra-ui/react";
-import { getAuth, signOut } from "firebase/auth";
-import { app } from "../utils/firebase"; // ← initializeApp済みfirebase
+import { Box, Flex, Text, Link, Button, Image } from '@chakra-ui/react';
+import { getAuth, signOut } from 'firebase/auth';
+import { app } from '../utils/firebase'; // ← initializeApp済みfirebase
 
 // isAdmin をpropsで受け取る
 export default function Header({ isAdmin = false }: { isAdmin?: boolean }) {
-   const handleLogout = async () => {
+  const handleLogout = async () => {
     const auth = getAuth(app);
     try {
       await signOut(auth);
-      alert("ログアウトしました！");
-      window.location.href = "/"; // ← トップページにリダイレクト
+      alert('ログアウトしました！');
+      window.location.href = '/'; // ← トップページにリダイレクト
     } catch (error) {
-      alert("ログアウトに失敗しました");
+      alert('ログアウトに失敗しました');
     }
   };
 
@@ -37,20 +37,35 @@ export default function Header({ isAdmin = false }: { isAdmin?: boolean }) {
       >
         {/* 左：タイトル */}
         <Text
-          fontSize={{ base: "md", md: "xl" }}
+          fontSize={{ base: 'md', md: 'xl' }}
           fontWeight="bold"
           letterSpacing={2}
           fontFamily="'Zen Maru Gothic', 'M PLUS Rounded 1c', sans-serif"
           mt={2}
+          display="flex"
+          alignItems="center"
         >
-          Mai Shimizu Portfolio Site
+          <Image
+            src="/sakanalogo.png"
+            alt="M logo"
+            boxSize="1.5em"
+            width="auto"   
+            display="inline-block"
+            mr="1"
+            verticalAlign="middle"
+          />
+          ai Shimizu Portfolio Site
         </Text>
         {/* 右：メニュー横並び */}
         <Flex align="center" gap={5} mt={1}>
           <Link href="#">Home</Link>
           <Link href="#project">Project</Link>
           <Link href="#skill">Skill</Link>
-          <Link href="/contactform" fontSize="md" _hover={{ color: "blue.600", textDecoration: "underline" }}>
+          <Link
+            href="/contactform"
+            fontSize="md"
+            _hover={{ color: 'blue.600', textDecoration: 'underline' }}
+          >
             Contact
           </Link>
           {isAdmin ? (
@@ -67,7 +82,7 @@ export default function Header({ isAdmin = false }: { isAdmin?: boolean }) {
             <Link
               href="/login"
               fontSize="md"
-              _hover={{ color: "blue.600", textDecoration: "underline" }}
+              _hover={{ color: 'blue.600', textDecoration: 'underline' }}
             >
               Login
             </Link>

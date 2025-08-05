@@ -40,6 +40,7 @@ export default function ContactSection({
       </Flex>
       <Text color="gray.500" mb={10} fontSize="lg">
         ポートフォリオをご覧いただきありがとうございます。
+        <br />
         どんなことでもお気軽にご連絡いただけると嬉しいです！
         <br />
         いただいた内容にはできるだけ早くお返事いたします。

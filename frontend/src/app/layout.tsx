@@ -1,6 +1,12 @@
-'use client';
-
 import { ChakraProvider } from '@chakra-ui/react';
+
+export const metadata = {
+  title: ' Portfolio  |  Mai Shimizu',
+  description: 'My awesome portfolio',
+  icons: {
+    icon: '/FaviconLogo.png', // ←ここにfavicon画像のパス！
+  },
+};
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (

@@ -28,9 +28,8 @@ export default function HeroSection() {
           fontWeight="bold"
           color="gray.800"
           mb={4}
-          sx={{
-            fontFamily: "'Zen Maru Gothic', 'M PLUS Rounded 1c', sans-serif",
-          }}
+          fontFamily="'Zen Maru Gothic', 'M PLUS Rounded 1c', sans-serif"
+          fontStyle="italic" 
         >
           「一歩ずつ、前へ」
         </Heading>
@@ -38,7 +37,7 @@ export default function HeroSection() {
           fontSize={{ base: 'md', md: 'xl' }}
           color="gray.700"
           mb={2}
-          textAlign="center" // ←ここをcenterに！
+          textAlign="center"
           fontFamily="'Zen Maru Gothic', 'M PLUS Rounded 1c', sans-serif"
         >
           好奇心を武器に、
@@ -59,9 +58,9 @@ export default function HeroSection() {
         zIndex={1}
       >
         {/* ラフな背景影 */}
-          <Box
-          w={{ base: "320px", md: "540px" }}
-          h={{ base: "220px", md: "410px" }}
+        <Box
+          w={{ base: '320px', md: '540px' }}
+          h={{ base: '220px', md: '410px' }}
           bg="gray.300"
           borderRadius="44% 56% 63% 37% / 54% 46% 63% 47%"
           position="absolute"

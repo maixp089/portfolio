@@ -24,7 +24,7 @@ out/
 out/
 
 # 画像
-/frontend/public/mountain.jpg
+/frontend/public
 /backend/uploads
 
 # Prisma

@@ -83,8 +83,7 @@ export default function ContactFormPage() {
         お問い合わせフォーム
       </Text>
       <Text mb={6} color="gray.600">
-        ポートフォリオをご覧いただきありがとうございます。
-        ご質問など、ご自由にご記入ください！
+        どんなことでも、お気軽にご記入ください！
       </Text>
       {submitted ? (
         <Box bg="green.50" p={6} rounded="md" textAlign="center">
