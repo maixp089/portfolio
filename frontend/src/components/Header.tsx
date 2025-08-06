@@ -57,20 +57,20 @@ export default function Header({ isAdmin = false }: { isAdmin?: boolean }) {
           ai Shimizu Portfolio Site
         </Text>
         {/* 右：メニュー横並び */}
-        <Flex align="center" gap={5} mt={1}>
-          <Link href="#">Home</Link>
-          <Link href="#project">Project</Link>
-          <Link href="#skill">Skill</Link>
+        <Flex alignItems="flex-end" gap={5} height="40px">
+          <Link href="#" fontSize="lg">Home</Link>
+          <Link href="#project" fontSize="lg">Project</Link>
+          <Link href="#skill" fontSize="lg">Skill</Link>
           <Link
             href="/contactform"
-            fontSize="md"
+            fontSize="lg"
             _hover={{ color: 'blue.600', textDecoration: 'underline' }}
           >
             Contact
           </Link>
           {isAdmin ? (
             <Button
-              size="sm"
+              size="md"
               colorScheme="gray"
               variant="outline"
               borderRadius="full"
@@ -81,7 +81,7 @@ export default function Header({ isAdmin = false }: { isAdmin?: boolean }) {
           ) : (
             <Link
               href="/login"
-              fontSize="md"
+              fontSize="lg"
               _hover={{ color: 'blue.600', textDecoration: 'underline' }}
             >
               Login
