@@ -23,10 +23,6 @@ out/
 .vercel/
 out/
 
-# 画像
-/frontend/public
-/backend/uploads
-
 # Prisma
 prisma/.env
 prisma/migrations/
