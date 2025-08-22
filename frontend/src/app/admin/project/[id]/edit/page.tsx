@@ -23,7 +23,7 @@ export default function EditProjectPage() {
   useEffect(() => {
     const fetchProject = async () => {
       try {
-        const res = await fetch(`http://localhost:4000/api/portfolios/${id}`)
+        const res = await fetch(`/api/portfolios/${id}`)
         const data = await res.json()
         setTitle(data.title)
         setDescription(data.description || '')
@@ -50,7 +50,7 @@ export default function EditProjectPage() {
     if (image) formData.append('image', image)
 
     try {
-      const res = await fetch(`http://localhost:4000/api/portfolios/${id}`, {
+      const res = await fetch(`/api/portfolios/${id}`, {
         method: 'PUT',
         body: formData,
       })

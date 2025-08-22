@@ -36,7 +36,7 @@ export default function ProjectSection({
   useEffect(() => {
     const fetchProjects = async () => {
       try {
-        const res = await fetch('http://localhost:4000/api/portfolios');
+        const res = await fetch('/api/portfolios');
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || '取得に失敗しました');
         setProjects(data);
@@ -63,7 +63,7 @@ export default function ProjectSection({
     if (!window.confirm('本当に削除しますか？')) return;
 
     try {
-      const res = await fetch(`http://localhost:4000/api/portfolios/${id}`, {
+      const res = await fetch(`/api/portfolios/${id}`, {
         method: 'DELETE',
       });
 

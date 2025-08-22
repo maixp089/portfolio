@@ -33,7 +33,7 @@ export default function SkillSection({
   useEffect(() => {
     const fetchSkills = async () => {
       try {
-        const res = await fetch('http://localhost:4000/api/skills');
+        const res = await fetch('/api/skills');
         const data = await res.json();
         if (!res.ok) throw new Error(data.message || '取得に失敗しました');
         setSkills(data);
@@ -59,7 +59,7 @@ export default function SkillSection({
     if (!window.confirm('本当に削除しますか？')) return;
 
     try {
-      const res = await fetch(`http://localhost:4000/api/skills/${id}`, {
+      const res = await fetch(`/api/skills/${id}`, {
         method: 'DELETE',
       });
 
