@@ -51,7 +51,7 @@ export default function AddProjectPage() {
     formData.append('userId', String(userId)); // 必ず文字列で渡す
 
     try {
-      const res = await fetch('http://localhost:4000/api/portfolios', {
+      const res = await fetch('/api/portfolios', {
         method: 'POST',
         body: formData,
       });

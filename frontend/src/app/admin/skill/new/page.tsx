@@ -32,7 +32,7 @@ export default function AddSkillPage() {
     if (logo) formData.append('logo', logo)
 
     try {
-      const res = await fetch('http://localhost:4000/api/skills', {
+      const res = await fetch('/api/skills', {
         method: 'POST',
         body: formData,
       })

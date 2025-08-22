@@ -28,7 +28,7 @@ export default function AdminContactPage() {
   useEffect(() => {
     const fetchContacts = async () => {
       try {
-        const res = await fetch('http://localhost:4000/api/contacts');
+        const res = await fetch('/api/contacts');
         const data = await res.json();
         setContacts(data);
       } catch (err) {

@@ -30,7 +30,7 @@ export default function EditSkillPage() {
     if (!id) return;
     const fetchData = async () => {
       try {
-        const res = await fetch(`http://localhost:4000/api/skills/${id}`);
+        const res = await fetch(`/api/skills/${id}`);
         const data = await res.json();
         if (!res.ok) throw new Error(data.message);
         setName(data.name);
@@ -63,7 +63,7 @@ export default function EditSkillPage() {
     if (logo) formData.append('logo', logo);
 
     try {
-      const res = await fetch(`http://localhost:4000/api/skills/${id}`, {
+      const res = await fetch(`/api/skills/${id}`, {
         method: 'PUT',
         body: formData,
       });
