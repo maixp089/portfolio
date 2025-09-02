@@ -5,6 +5,7 @@ import { S3Client } from '@aws-sdk/client-s3';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
 import { DeleteObjectCommand } from '@aws-sdk/client-s3'; // S3でファイルを削除するためのクラス
+import { getAdmin } from '../lib/getAdmin';
 
 dotenv.config();
 const router = express.Router();
@@ -78,15 +79,16 @@ router.post('/', upload.single('logo'), async (req, res) => {
     if (!name || !userId) {
       return res.status(400).json({ message: 'nameとuserIdは必須です' });
     }
-    const userIdInt = Number(userId);
+    // 管理ユーザーを取得（いなければ自動作成される）
+    const admin = await getAdmin();
 
     // Skillレコードを作成
     const newSkill = await prisma.skill.create({
       data: {
         name,
-        userId: userIdInt,
         logoUrl: logoFile?.location ?? null, // ← location を保存
         description,
+        user: { connect: { id: admin.id } },
       },
     });
     res.status(201).json(newSkill);
@@ -161,10 +163,12 @@ router.put('/:id', upload.single('logo'), async (req, res) => {
   if (description) updateData.description = description;
 
   try {
-     // 1. 既存のSkill情報を取得
+    // 1. 既存のSkill情報を取得
     const skill = await prisma.skill.findUnique({ where: { id } });
     if (!skill) {
-      return res.status(404).json({ message: `ID ${id} のスキルが見つかりませんでした` });
+      return res
+        .status(404)
+        .json({ message: `ID ${id} のスキルが見つかりませんでした` });
     }
     // 2. 画像アップロードがあれば
     if (logoFile) {
@@ -187,7 +191,7 @@ router.put('/:id', upload.single('logo'), async (req, res) => {
       where: { id },
       data: updateData,
     });
-    
+
     res.json(updated);
   } catch (err: unknown) {
     console.error('更新エラー:', err);
