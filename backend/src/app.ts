@@ -6,7 +6,10 @@ import contactRouter from "./routes/contact";
 const app = express();
 
 app.use(cors({
-  origin: 'http://localhost:3000', 
+  origin: [
+  'http://localhost:3000', 
+  "https://portfolio-delta-nine-d809vhhml9.vercel.app"
+  ],
   credentials: true 
 }));
 app.use(express.json());
