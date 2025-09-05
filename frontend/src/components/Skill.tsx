@@ -75,20 +75,20 @@ export default function SkillSection({
     }
   };
   if (loading) {
-  return (
-    <Center minH="70vh">
-      <Spinner size="xl" color="blue.500" />
-    </Center>
-  );
-}
+    return (
+      <Center minH="70vh">
+        <Spinner size="xl" color="blue.500" />
+      </Center>
+    );
+  }
 
-if (error) {
-  return (
-    <Center minH="70vh">
-      <Text color="red.500">{error}</Text>
-    </Center>
-  );
-}
+  if (error) {
+    return (
+      <Center minH="70vh">
+        <Text color="red.500">{error}</Text>
+      </Center>
+    );
+  }
 
   return (
     <Box as="section" id="skill" py={16} px={4} maxW="1200px" mx="auto">
@@ -116,65 +116,97 @@ if (error) {
           />
         </Flex>
       )}
-      {/* 4つ横並び */}
+      {/* 一覧 */}
+      {/* ★ 変更: columns をレスポンシブに、間隔も可変に */}
       <SimpleGrid
-        columns={[1, 2, 3, 4]}
-        spacing={10}
+        columns={{ base: 2, sm: 3, md: 4 }} // ← スマホ2列 / タブレット3列 / PC4列（Skillsは小粒なので多めが見やすい）
+        spacing={{ base: 4, md: 6 }}
         mb={10}
         justifyItems="center"
+        w="100%"
       >
+        {/* ★ 変更: projects → skills に */}
         {skills.map((skill) => (
           <Box
             key={skill.id}
-            w="260px"
+            // ★ 変更: 固定幅をやめ、親に追従
+            w="100%"
+            maxW={{ base: '140px', sm: '160px', md: '180px' }} // ← Skillsは小ぶりサイズで統一
             h="auto"
-            border="2px solid #aaa"
+            border="1px solid #ddd" // ← 少し軽めの枠線
             borderRadius="xl"
-            p={6}
+            p={{ base: 3, md: 4 }} // ← 余白は控えめ
             textAlign="center"
             bg="white"
             fontFamily="'Zen Maru Gothic', 'M PLUS Rounded 1c', sans-serif"
-            boxShadow="md"
+            boxShadow="sm"
             display="flex"
             flexDirection="column"
             alignItems="center"
-            justifyContent="center"
-            transition="box-shadow 0.2s"
-            _hover={{ boxShadow: 'xl', borderColor: '#888' }}
+            justifyContent="flex-start"
+            transition="box-shadow 0.2s, transform 0.1s"
+            _hover={{ boxShadow: 'md', transform: 'translateY(-2px)' }}
           >
+            {/* ロゴ（あれば表示） */}
             {skill.logoUrl && (
-              <Image
-                src={skill.logoUrl}
-                alt={skill.name}
-                w="72px"
-                h="72px"
-                objectFit="contain"
-                borderRadius="lg"
+              <Box
+                // ロゴ置き場：縦横比がバラついても枠内に収める
+                w="100%"
+                h={{ base: '64px', sm: '72px', md: '80px' }}
+                display="flex"
+                alignItems="center"
+                justifyContent="center"
+                bg="white"
+                borderRadius="md"
                 mb={3}
-                // bg="transparent"
-                // boxShadow="sm"
-              />
+              >
+                <Image
+                  src={skill.logoUrl}
+                  alt={skill.name}
+                  maxW="100%"
+                  maxH="100%"
+                  objectFit="contain" // ← Skillsは contain が正解（アイコンの比率を保持）
+                />
+              </Box>
             )}
-            <Text fontSize="lg" fontWeight="bold">
+
+            {/* スキル名 */}
+            <Text
+              fontSize={{ base: 'sm', md: 'md' }}
+              fontWeight="bold"
+              noOfLines={1}
+            >
               {skill.name}
             </Text>
-            <Text color="gray.500" mt={1}>
-              {skill.description}
-            </Text>
-            {/* 変更・削除ボタン（管理者のみ表示） */}
+
+            {/* 説明（あれば） */}
+            {skill.description && (
+              <Text
+                color="gray.600"
+                mt={1}
+                fontSize={{ base: 'xs', md: 'sm' }}
+                noOfLines={2} // ← 長文で崩れないよう制限
+              >
+                {skill.description}
+              </Text>
+            )}
+
+            {/* 管理者用ボタン（必要なら） */}
             {isAdmin && (
-              <Flex gap={2} mt={2} justify="center">
+              <Flex gap={2} mt={3} justify="center">
+                {/* 既存の編集/削除ハンドラ名に合わせて差し替えてね */}
+                {/* ★ 変更: skill.id を渡す */}
                 <EditButton
-                  onClick={() => handleEdit(skill.id)}
+                  onClick={() => handleEdit(skill.id)} // ← projects → skills に合わせる
                   label="変更"
                   colorScheme="blue"
-                  size="sm"
+                  size="xs"
                 />
                 <EditButton
-                  onClick={() => handleDelete(skill.id)}
+                  onClick={() => handleDelete(skill.id)} // ← projects → skills に合わせる
                   label="削除"
                   colorScheme="red"
-                  size="sm"
+                  size="xs"
                 />
               </Flex>
             )}
