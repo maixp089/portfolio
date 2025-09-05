@@ -1,9 +1,30 @@
-import { Box, Flex, Text, Link, Button, Image } from '@chakra-ui/react';
+'use client';
+import {
+  Box,
+  Flex,
+  Text,
+  Link,
+  Button,
+  Image,
+  IconButton,      // ← 追加
+  HStack,          // ← 追加
+  Drawer,          // ← 追加
+  DrawerOverlay,   // ← 追加
+  DrawerContent,   // ← 追加
+  DrawerHeader,    // ← 追加
+  DrawerBody,      // ← 追加
+  DrawerCloseButton, // ← 追加
+  Stack,           // ← 追加
+  useDisclosure,   // ← 追加
+} from '@chakra-ui/react';
+import { HamburgerIcon } from '@chakra-ui/icons'; // ← 追加
 import { getAuth, signOut } from 'firebase/auth';
 import { app } from '../utils/firebase'; // ← initializeApp済みfirebase
 
 // isAdmin をpropsで受け取る
 export default function Header({ isAdmin = false }: { isAdmin?: boolean }) {
+  const { isOpen, onOpen, onClose } = useDisclosure(); // ← 追加
+
   const handleLogout = async () => {
     const auth = getAuth(app);
     try {
@@ -27,6 +48,7 @@ export default function Header({ isAdmin = false }: { isAdmin?: boolean }) {
         bg="#222"
         opacity={0.18}
       />
+
       <Flex
         align="flex-start"
         justify="space-between"
@@ -49,15 +71,22 @@ export default function Header({ isAdmin = false }: { isAdmin?: boolean }) {
             src="/sakanalogo.png"
             alt="M logo"
             boxSize="1.5em"
-            width="auto"   
+            width="auto"
             display="inline-block"
             mr="1"
             verticalAlign="middle"
           />
           ai Shimizu Portfolio Site
         </Text>
-        {/* 右：メニュー横並び */}
-        <Flex alignItems="flex-end" gap={5} height="40px">
+
+        {/* 右：デスクトップ用ナビ */}
+        <HStack
+          as="nav"
+          spacing={5}
+          alignItems="flex-end"
+          height="40px"
+          display={{ base: 'none', md: 'flex' }} // ← モバイルでは非表示
+        >
           <Link href="#" fontSize="lg">Home</Link>
           <Link href="#project" fontSize="lg">Project</Link>
           <Link href="#skill" fontSize="lg">Skill</Link>
@@ -87,8 +116,60 @@ export default function Header({ isAdmin = false }: { isAdmin?: boolean }) {
               Login
             </Link>
           )}
-        </Flex>
+        </HStack>
+
+        {/* モバイル用ハンバーガー */}
+        <IconButton
+          aria-label="Open menu"
+          icon={<HamburgerIcon />}
+          display={{ base: 'inline-flex', md: 'none' }} // ← スマホのみ表示
+          variant="ghost"
+          onClick={onOpen}
+        />
       </Flex>
+
+      {/* Drawerメニュー */}
+      <Drawer isOpen={isOpen} placement="right" onClose={onClose}>
+        <DrawerOverlay />
+        <DrawerContent>
+          <DrawerCloseButton />
+          <DrawerHeader>Menu</DrawerHeader>
+          <DrawerBody>
+            <Stack spacing={4} as="nav" onClick={onClose}>
+              <Link href="#" fontSize="lg">Home</Link>
+              <Link href="#project" fontSize="lg">Project</Link>
+              <Link href="#skill" fontSize="lg">Skill</Link>
+              <Link
+                href="/contactform"
+                fontSize="lg"
+                _hover={{ color: 'blue.600', textDecoration: 'underline' }}
+              >
+                Contact
+              </Link>
+              {isAdmin ? (
+                <Button
+                  size="md"
+                  colorScheme="gray"
+                  variant="outline"
+                  borderRadius="full"
+                  onClick={handleLogout}
+                >
+                  Logout
+                </Button>
+              ) : (
+                <Link
+                  href="/login"
+                  fontSize="lg"
+                  _hover={{ color: 'blue.600', textDecoration: 'underline' }}
+                >
+                  Login
+                </Link>
+              )}
+            </Stack>
+          </DrawerBody>
+        </DrawerContent>
+      </Drawer>
     </Box>
   );
 }
+
