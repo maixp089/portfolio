@@ -130,15 +130,24 @@ export default function ProjectSection({
       )}
 
       {/* 一覧 */}
-      <SimpleGrid columns={[1, 2]} spacing={10} mb={10} justifyItems="center">
+      {/* ★ 変更: columns をレスポンシブに、間隔も可変に */}
+      <SimpleGrid
+        columns={{ base: 1, sm: 2, lg: 3 }} // ← スマホ1列 / タブレット2列 / PC3列
+        spacing={{ base: 6, md: 10 }}
+        mb={10}
+        justifyItems="center"
+        w="100%"
+      >
         {projects.map((project) => (
           <Box
             key={project.id}
-            w="500px"
+            // ★ 変更: 固定幅をやめ、親に追従
+            w="100%"
+            maxW={{ base: '100%', sm: '320px', md: '360px' }} // ← 最大幅を段階的に制御
             h="auto"
             border="2px solid #aaa"
             borderRadius="xl"
-            p={6}
+            p={{ base: 4, md: 6 }} // ← スマホは少し余白を小さく
             textAlign="center"
             bg="white"
             fontFamily="'Zen Maru Gothic', 'M PLUS Rounded 1c', sans-serif"
@@ -155,19 +164,29 @@ export default function ProjectSection({
               <Image
                 src={project.imageUrl}
                 alt={project.title}
-                w="400px"
-                h="200px"
-                objectFit="contain"
+                // ★ 変更: 固定pxをやめて可変に
+                w="100%"
+                h={{ base: '160px', sm: '180px', md: '200px' }}
+                objectFit="cover" // ← contain → cover に変更して枠いっぱいに表示
                 borderRadius="lg"
                 mb={4}
                 bg="white"
                 boxShadow="sm"
               />
             )}
-            <Text fontSize="xl" fontWeight="bold">
+            <Text
+              fontSize={{ base: 'lg', md: 'xl' }} // ← スマホで少し小さめ
+              fontWeight="bold"
+              noOfLines={1} // ← タイトルが長すぎる場合折返し制御
+            >
               {project.title}
             </Text>
-            <Text color="gray.500" mt={1}>
+            <Text
+              color="gray.500"
+              mt={1}
+              fontSize={{ base: 'sm', md: 'md' }}
+              noOfLines={3} // ← 長文で崩れないよう最大行数を制御
+            >
               {project.description}
             </Text>
             {project.url && project.urlType && (
@@ -177,6 +196,7 @@ export default function ProjectSection({
                 color="blue.500"
                 mt={2}
                 fontWeight="medium"
+                fontSize={{ base: 'sm', md: 'md' }}
                 _hover={{ textDecoration: 'underline' }}
               >
                 ▶{' '}
